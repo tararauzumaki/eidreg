@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ঈদ পুনর্মিলনী - Ticket Generator</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --text-color: #1a1a1a;
+        }
+        body {
+            font-family: 'Hind Siliguri', sans-serif; 
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* Control Panel */
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            font-family: sans-serif;
+            box-sizing: border-box;
+        }
+        @media (max-width: 600px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+        .controls h3 {
+            grid-column: 1 / -1;
+            margin-top: 0;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            font-size: 18px;
+        }
+        .controls label {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .controls input[type="text"], .controls input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0b5ed7;
+        }
+
+        /* Ticket Preview Canvas */
+        .preview-wrapper {
+            width: 100%;
+            max-width: 950px;
+            display: flex;
+            justify-content: center;
+            overflow: hidden; 
+        }
+        #ticket-scale-wrapper {
+            transform-origin: top center;
+        }
+        #ticket-canvas {
+            width: 950px; 
+            height: 420px; 
+            background-image: url('https://i.imgur.com/8fy6p6V.png');
+            background-size: 100% 100%; 
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            padding: 25px 40px;
+            box-sizing: border-box;
+            color: var(--text-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Logos Row */
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            height: 100px;
+            margin-bottom: 20px; /* Slight adjustment */
+            width: 100%;
+        }
+        .logo-placeholder {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-placeholder img {
+            max-height: 90px;
+            max-width: 150px;
+            object-fit: contain;
+        }
+        #center-logo img {
+            max-height: 110px;
+            max-width: 400px;
+        }
+
+        /* Registration Number */
+        .reg-number {
+            font-size: 19px; /* Increased slightly */
+            font-weight: 600; 
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .reg-box {
+            background: #fdfdfd;
+            border: 1px solid #d1e5f0;
+            padding: 2px 15px;
+            min-width: 80px;
+            min-height: 25px;
+            margin-left: 10px;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        /* Main Body Text */
+        .body-text {
+            font-size: 20px; /* Increased font size for better readability */
+            line-height: 1.85; /* Increased to separate line 1 and line 2 properly */
+            margin-bottom: 15px;
+            font-weight: 600; 
+            text-align: justify; /* Aligns both left and right edges evenly with top/bottom elements */
+            width: 100%;
+        }
+        .name-slot {
+            display: inline-block;
+            min-width: 250px;
+            border-bottom: 2px dotted #333;
+            text-align: center;
+            margin: 0 10px;
+            font-weight: 700;
+            color: #000; 
+            -webkit-text-stroke: 0.5px #000;
+            position: relative;
+            top: -2px; /* Pulls the dotted line slightly up relative to the text block */
+        }
+        .ultra-bold {
+            font-weight: 700; 
+            color: #000;
+            -webkit-text-stroke: 0.6px #000;
+            letter-spacing: 0.3px;
+        }
+
+        /* Footer / Signatures */
+        .footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: auto;
+            width: 100%;
+        }
+        .collector-info {
+            font-size: 18px; /* Matched the bigger proportions */
+            line-height: 1.4;
+            font-weight: 600; 
+        }
+        .signature-area {
+            text-align: center;
+        }
+        .signature-font {
+            font-family: 'Great Vibes', cursive;
+            font-size: 40px; 
+            color: #2c3e50;
+            margin-bottom: -10px;
+            font-weight: normal;
+        }
+        .signature-line {
+            font-size: 18px;
+            font-weight: 600; 
+            border-top: 1px solid transparent; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h3>১. লোগো ও টাইপোগ্রাফি পরিবর্তন করুন (ঐচ্ছিক)</h3>
+        <div>
+            <label>বাম দিকের লোগো</label>
+            <input type="file" accept="image/png" onchange="loadImage(event, 'img-left')">
+        </div>
+        <div>
+            <label>ডান দিকের লোগো</label>
+            <input type="file" accept="image/png" onchange="loadImage(event, 'img-right')">
+        </div>
+        <div class="full-width">
+            <label>মাঝের টাইপোগ্রাফি</label>
+            <input type="file" accept="image/png" onchange="loadImage(event, 'img-center')">
+        </div>
+
+        <h3>২. তথ্য দিন</h3>
+        <div>
+            <label>রেজিস্ট্রেশন নম্বর</label>
+            <input type="text" id="input-reg" placeholder="যেমন: 101" oninput="updateText()">
+        </div>
+        <div>
+            <label>নাম</label>
+            <input type="text" id="input-name" placeholder="আপনার নাম লিখুন" oninput="updateText()">
+        </div>
+        
+        <div class="full-width" style="text-align: center; margin-top: 10px;">
+            <button onclick="downloadImage()">টিকিট ডাউনলোড করুন</button>
+        </div>
+    </div>
+
+    <div class="preview-wrapper" id="preview-wrapper">
+        <div id="ticket-scale-wrapper">
+            <div id="ticket-canvas">
+                
+                <div class="top-row">
+                    <div class="logo-placeholder" id="left-logo">
+                        <img id="img-left" src="https://i.imgur.com/cFFtfNk.png" alt="Left Logo">
+                    </div>
+                    <div class="logo-placeholder" id="center-logo">
+                        <img id="img-center" src="https://i.imgur.com/JHsFG8Y.png" alt="Center Typography">
+                    </div>
+                    <div class="logo-placeholder" id="right-logo">
+                        <img id="img-right" src="https://i.imgur.com/KPgSipq.png" alt="Right Logo">
+                    </div>
+                </div>
+
+                <div class="reg-number">
+                    রেজিস্ট্রেশন নম্বর: <span class="reg-box" id="display-reg"></span>
+                </div>
+
+                <div class="body-text">
+                    জনাব <span class="name-slot" id="display-name"></span> এর কাছ থেকে রাজধরপুর মাধ্যমিক বিদ্যালয় প্রাক্তন ছাত্র সমিতি কর্তৃক আয়োজিত <span class="ultra-bold">"ঈদ পুনর্মিলনী ২০২৬"</span> এর রেজিস্ট্রেশন ফি ৫০০/- (পাঁচ শত টাকা) টাকা বুঝিয়া পাইলাম।
+                </div>
+
+                <div class="footer-row">
+                    <div class="collector-info">
+                        আদায়কারীর নাম: তানভীর রানা রাব্বি<br>
+                        আদায়কারীর মোবাইল: 01571214187
+                    </div>
+                    <div class="signature-area">
+                        <div class="signature-font">Tanvir</div>
+                        <div class="signature-line">আদায়কারীর স্বাক্ষর</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateText() {
+            document.getElementById('display-reg').innerText = document.getElementById('input-reg').value;
+            document.getElementById('display-name').innerText = document.getElementById('input-name').value || '\u00A0'; 
+        }
+
+        function loadImage(event, imgId) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(imgId).src = e.target.result;
+            }
+            if(event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+
+        updateText();
+
+        function adjustScale() {
+            const wrapper = document.getElementById('preview-wrapper');
+            const scaleWrapper = document.getElementById('ticket-scale-wrapper');
+            const targetWidth = 950; 
+            const padding = 30; 
+            const availableWidth = window.innerWidth - padding;
+            
+            if (availableWidth < targetWidth) {
+                const scale = availableWidth / targetWidth;
+                scaleWrapper.style.transform = `scale(${scale})`;
+                wrapper.style.height = `${420 * scale}px`; 
+            } else {
+                scaleWrapper.style.transform = 'scale(1)';
+                wrapper.style.height = '420px';
+            }
+        }
+
+        window.addEventListener('resize', adjustScale);
+        window.addEventListener('load', adjustScale);
+
+        function downloadImage() {
+            const container = document.getElementById('ticket-canvas');
+            const scaleWrapper = document.getElementById('ticket-scale-wrapper');
+            const currentTransform = scaleWrapper.style.transform;
+            scaleWrapper.style.transform = 'scale(1)';
+            
+            html2canvas(container, {
+                scale: 3, 
+                useCORS: true, 
+                backgroundColor: null 
+            }).then(canvas => {
+                const link = document.createElement('a');
+                const regNum = document.getElementById('input-reg').value || 'ticket';
+                link.download = `Eid_Reunion_${regNum}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                scaleWrapper.style.transform = currentTransform;
+            });
+        }
+    </script>
+</body>
+</html>
