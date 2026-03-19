@@ -237,8 +237,21 @@
             <input type="text" id="input-reg" placeholder="যেমন: 101" oninput="updateText()">
         </div>
         <div>
-            <label>নাম</label>
+            <label>অংশগ্রহণকারীর নাম</label>
             <input type="text" id="input-name" placeholder="আপনার নাম লিখুন" oninput="updateText()">
+        </div>
+        
+        <div>
+            <label>আদায়কারীর নাম</label>
+            <input type="text" id="input-collector-name" value="তানভীর রানা রাব্বি" oninput="updateText()">
+        </div>
+        <div>
+            <label>আদায়কারীর মোবাইল</label>
+            <input type="text" id="input-collector-phone" value="01571214187" oninput="updateText()">
+        </div>
+        <div class="full-width">
+            <label>আদায়কারীর স্বাক্ষর (ইংরেজিতে)</label>
+            <input type="text" id="input-signature" value="Tanvir" oninput="updateText()">
         </div>
         
         <div class="full-width" style="text-align: center; margin-top: 10px;">
@@ -272,11 +285,11 @@
 
                 <div class="footer-row">
                     <div class="collector-info">
-                        আদায়কারীর নাম: তানভীর রানা রাব্বি<br>
-                        আদায়কারীর মোবাইল: 01571214187
+                        আদায়কারীর নাম: <span id="display-collector-name">তানভীর রানা রাব্বি</span><br>
+                        আদায়কারীর মোবাইল: <span id="display-collector-phone">01571214187</span>
                     </div>
                     <div class="signature-area">
-                        <div class="signature-font">Tanvir</div>
+                        <div class="signature-font" id="display-signature">Tanvir</div>
                         <div class="signature-line">আদায়কারীর স্বাক্ষর</div>
                     </div>
                 </div>
@@ -287,8 +300,14 @@
 
     <script>
         function updateText() {
+            // Update Participant Info
             document.getElementById('display-reg').innerText = document.getElementById('input-reg').value;
             document.getElementById('display-name').innerText = document.getElementById('input-name').value || '\u00A0'; 
+            
+            // Update Collector Info
+            document.getElementById('display-collector-name').innerText = document.getElementById('input-collector-name').value;
+            document.getElementById('display-collector-phone').innerText = document.getElementById('input-collector-phone').value;
+            document.getElementById('display-signature').innerText = document.getElementById('input-signature').value;
         }
 
         function loadImage(event, imgId) {
